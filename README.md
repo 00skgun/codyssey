@@ -10,4 +10,7 @@ git 버전 : 2.53.0
 
 ## 터미널 조작 로그 기록 
 ''' bash  
-s
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS         PORTS                  NAMES
+f3ed58fc9a12   my-app    "nginx"   2 minutes ago   Up 2 minutes   0.0.0.0:8080->80/tcp   web-server
+$ echo "이런 식으로 명령어 앞에 $ 기호를 붙여줍니다."
