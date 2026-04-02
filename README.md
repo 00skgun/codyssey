@@ -203,3 +203,104 @@ c00skgun0932@c5r5s7 test %
 ## Docker 기본 운영 명령 수행
 
 ``` bash
+c00skgun0932@c5r5s7 test % docker images
+REPOSITORY    TAG       IMAGE ID       CREATED      SIZE
+hello-world   latest    e2ac70e7319a   9 days ago   10.1kB
+c00skgun0932@c5r5s7 test % docker run -it ubuntu:22.04 bash
+Unable to find image 'ubuntu:22.04' locally
+22.04: Pulling from library/ubuntu
+de47083ed7d7: Pull complete 
+Digest: sha256:5e5b128eb4ff35ee52687c20d081dcc15b8cb55e113247683f435224fc58b956
+Status: Downloaded newer image for ubuntu:22.04
+root@dceb7e83e35b:/# ^C
+root@dceb7e83e35b:/# ls -la 
+total 24
+drwxr-xr-x   1 root root   6 Apr  2 03:36 .
+drwxr-xr-x   1 root root   6 Apr  2 03:36 ..
+-rwxr-xr-x   1 root root   0 Apr  2 03:36 .dockerenv
+lrwxrwxrwx   1 root root   7 Mar 22 14:07 bin -> usr/bin
+drwxr-xr-x   1 root root   0 Apr 18  2022 boot
+drwxr-xr-x   5 root root 340 Apr  2 03:36 dev
+drwxr-xr-x   1 root root  56 Apr  2 03:36 etc
+drwxr-xr-x   1 root root   0 Apr 18  2022 home
+lrwxrwxrwx   1 root root   7 Mar 22 14:07 lib -> usr/lib
+lrwxrwxrwx   1 root root   9 Mar 22 14:07 lib32 -> usr/lib32
+lrwxrwxrwx   1 root root   9 Mar 22 14:07 lib64 -> usr/lib64
+lrwxrwxrwx   1 root root  10 Mar 22 14:07 libx32 -> usr/libx32
+drwxr-xr-x   1 root root   0 Mar 22 14:07 media
+drwxr-xr-x   1 root root   0 Mar 22 14:07 mnt
+drwxr-xr-x   1 root root   0 Mar 22 14:07 opt
+dr-xr-xr-x 230 root root   0 Apr  2 03:36 proc
+drwx------   1 root root  30 Mar 22 14:15 root
+drwxr-xr-x   1 root root  32 Mar 22 14:15 run
+lrwxrwxrwx   1 root root   8 Mar 22 14:07 sbin -> usr/sbin
+drwxr-xr-x   1 root root   0 Mar 22 14:07 srv
+dr-xr-xr-x  11 root root   0 Apr  2 03:36 sys
+drwxrwxrwt   1 root root   0 Mar 22 14:15 tmp
+drwxr-xr-x   1 root root  10 Mar 22 14:07 usr
+drwxr-xr-x   1 root root  90 Mar 22 14:15 var
+root@dceb7e83e35b:/# echo "Hello from container"
+Hello from container
+root@dceb7e83e35b:/# exit
+exit
+c00skgun0932@c5r5s7 test % docker ps -a
+CONTAINER ID   IMAGE          COMMAND    CREATED         STATUS                          PORTS     NAMES
+dceb7e83e35b   ubuntu:22.04   "bash"     2 minutes ago   Exited (0) About a minute ago             musing_lalande
+3f6a1df26083   hello-world    "/hello"   17 hours ago    Exited (0) 17 hours ago                   ecstatic_lichterman
+c00skgun0932@c5r5s7 test % docker logs dceb
+root@dceb7e83e35b:/# ^C
+root@dceb7e83e35b:/# ls -la 
+total 24
+drwxr-xr-x   1 root root   6 Apr  2 03:36 .
+drwxr-xr-x   1 root root   6 Apr  2 03:36 ..
+-rwxr-xr-x   1 root root   0 Apr  2 03:36 .dockerenv
+lrwxrwxrwx   1 root root   7 Mar 22 14:07 bin -> usr/bin
+drwxr-xr-x   1 root root   0 Apr 18  2022 boot
+drwxr-xr-x   5 root root 340 Apr  2 03:36 dev
+drwxr-xr-x   1 root root  56 Apr  2 03:36 etc
+drwxr-xr-x   1 root root   0 Apr 18  2022 home
+lrwxrwxrwx   1 root root   7 Mar 22 14:07 lib -> usr/lib
+lrwxrwxrwx   1 root root   9 Mar 22 14:07 lib32 -> usr/lib32
+lrwxrwxrwx   1 root root   9 Mar 22 14:07 lib64 -> usr/lib64
+lrwxrwxrwx   1 root root  10 Mar 22 14:07 libx32 -> usr/libx32
+drwxr-xr-x   1 root root   0 Mar 22 14:07 media
+drwxr-xr-x   1 root root   0 Mar 22 14:07 mnt
+drwxr-xr-x   1 root root   0 Mar 22 14:07 opt
+dr-xr-xr-x 230 root root   0 Apr  2 03:36 proc
+drwx------   1 root root  30 Mar 22 14:15 root
+drwxr-xr-x   1 root root  32 Mar 22 14:15 run
+lrwxrwxrwx   1 root root   8 Mar 22 14:07 sbin -> usr/sbin
+drwxr-xr-x   1 root root   0 Mar 22 14:07 srv
+dr-xr-xr-x  11 root root   0 Apr  2 03:36 sys
+drwxrwxrwt   1 root root   0 Mar 22 14:15 tmp
+drwxr-xr-x   1 root root  10 Mar 22 14:07 usr
+drwxr-xr-x   1 root root  90 Mar 22 14:15 var
+root@dceb7e83e35b:/# echo "Hello from container"
+Hello from container
+root@dceb7e83e35b:/# exit
+exit
+c00skgun0932@c5r5s7 test % docker logs 3f6a
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (amd64)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+ ```
+
+ ## 
