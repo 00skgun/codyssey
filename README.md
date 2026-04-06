@@ -436,3 +436,34 @@ c00skgun0932@c5r5s7 phase4 %
 
 ## git 연동 로그
 ``` bash
+c00skgun0932@c5r5s7 codyssey % git add .         
+c00skgun0932@c5r5s7 codyssey % git commit -m "git log check"
+[main 11772b1] git log check
+ Committer: 최건영 <c00skgun0932@c5r5s7.codyssey.kr>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 3 insertions(+)
+c00skgun0932@c5r5s7 codyssey % git push
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 6 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (3/3), 328 bytes | 328.00 KiB/s, done.
+Total 3 (delta 1), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/00skgun/codyssey.git
+   8ab1928..11772b1  main -> main
+```
+
+## 프로젝트 디렉토리 구성
+
