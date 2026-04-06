@@ -433,3 +433,6 @@ c00skgun0932@c5r5s7 phase4 % docker run --rm -v codyssey-data:/mnt/check alpine 
 volume test
 c00skgun0932@c5r5s7 phase4 % 
 ```
+
+## git 연동 로그
+``` bash
