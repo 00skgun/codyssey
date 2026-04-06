@@ -301,6 +301,19 @@ Share images, automate workflows, and more with a free Docker ID:
 
 For more examples and ideas, visit:
  https://docs.docker.com/get-started/
+ c00skgun0932@c5r5s7 phase4 % docker ps -a
+CONTAINER ID   IMAGE             COMMAND                  CREATED      STATUS                  PORTS     NAMES
+a3f88de9d083   codyssey-web:v1   "/docker-entrypoint.…"   4 days ago   Exited (0) 4 days ago             my-custom-server
+dceb7e83e35b   ubuntu:22.04      "bash"                   4 days ago   Exited (0) 4 days ago             musing_lalande
+3f6a1df26083   hello-world       "/hello"                 5 days ago   Exited (0) 5 days ago             ecstatic_lichterman
+c00skgun0932@c5r5s7 phase4 % docker rm a3f8
+a3f8
+c00skgun0932@c5r5s7 phase4 % docker ps -a
+CONTAINER ID   IMAGE          COMMAND    CREATED      STATUS                  PORTS     NAMES
+dceb7e83e35b   ubuntu:22.04   "bash"     4 days ago   Exited (0) 4 days ago             musing_lalande
+3f6a1df26083   hello-world    "/hello"   5 days ago   Exited (0) 5 days ago             ecstatic_lichterman
+c00skgun0932@c5r5s7 phase4 % 
+
  ```
 
  ## 기존 Dockerfile 기반 커스텀 이미지 제작
@@ -357,18 +370,17 @@ zsh: no matches found: 태그(버전)를
  => => naming to docker.io/library/codyssey-web:v1                         0.0s
 c00skgun0932@c5r5s7 phase4 % docker run -d -p 8080:80 --name my-custom-server codyssey-web:v1
 a3f88de9d083980b8857edba0352b8149788098039ff8c51432563a82c219ff4
-c00skgun0932@c5r5s7 phase4 % # 터미널에서 바로 확인하는 방법 (아까 적은 <h1>~</h1> 내용이 출력되면 성공!)
-curl http://localhost:8080
-zsh: event not found: )
+```
+## 브라우저 접속 화면(또는 curl 응답)을 기술 문서에 첨부한다.
+```bash
 c00skgun0932@c5r5s7 phase4 % curl http://localhost:8080
 <h1>Codyssey AI/SW Workstation Custom Image Test!</h1>
-c00skgun0932@c5r5s7 phase4 % docker logs my-web-server
-Error response from daemon: No such container: my-web-server
 c00skgun0932@c5r5s7 phase4 % docker ps -a
 CONTAINER ID   IMAGE             COMMAND                  CREATED             STATUS                         PORTS                                     NAMES
 a3f88de9d083   codyssey-web:v1   "/docker-entrypoint.…"   20 minutes ago      Up 20 minutes                  0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   my-custom-server
 dceb7e83e35b   ubuntu:22.04      "bash"                   About an hour ago   Exited (0) About an hour ago                                             musing_lalande
 3f6a1df26083   hello-world       "/hello"                 18 hours ago        Exited (0) 18 hours ago                                                  ecstatic_lichterman
+#도커 로그
 c00skgun0932@c5r5s7 phase4 % docker logs a3f88         
 /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
 /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
@@ -395,4 +407,29 @@ c00skgun0932@c5r5s7 phase4 % docker logs a3f88
 192.168.215.1 - - [02/Apr/2026:04:19:20 +0000] "GET / HTTP/1.1" 200 55 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15" "-"
 2026/04/02 04:19:20 [error] 30#30: *2 open() "/usr/share/nginx/html/favicon.ico" failed (2: No such file or directory), client: 192.168.215.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/"
 192.168.215.1 - - [02/Apr/2026:04:19:20 +0000] "GET /favicon.ico HTTP/1.1" 404 153 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15" "-"
+```
+
+## 볼륨 영속성 test
+
+```bash 
+c00skgun0932@c5r5s7 phase4 % docker volume create codyssey-data
+codyssey-data
+c00skgun0932@c5r5s7 phase4 % docker volume ls
+DRIVER    VOLUME NAME
+local     codyssey-data
+c00skgun0932@c5r5s7 phase4 % docker run -d --name temp-worker -v codyssey-data:/app/data alpine tail -f /dev/null
+Unable to find image 'alpine:latest' locally
+latest: Pulling from library/alpine
+589002ba0eae: Pull complete 
+Digest: sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+Status: Downloaded newer image for alpine:latest
+3e8d94aaad014d3aef23fdfcb135c27bb63174dfd01fe441a5da44e6036b59b0
+c00skgun0932@c5r5s7 phase4 % docker exec temp-worker sh -c "echo 'volume test'> /app/data/result.txt"
+c00skgun0932@c5r5s7 phase4 % docker exec temp-worker cat /app/data/result.txt
+volume test
+c00skgun0932@c5r5s7 phase4 % docker rm -f temp-worker
+temp-worker
+c00skgun0932@c5r5s7 phase4 % docker run --rm -v codyssey-data:/mnt/check alpine cat /mnt/check/result.txt
+volume test
+c00skgun0932@c5r5s7 phase4 % 
 ```
