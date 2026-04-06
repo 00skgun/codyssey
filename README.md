@@ -467,3 +467,10 @@ To https://github.com/00skgun/codyssey.git
 
 ## 프로젝트 디렉토리 구성
 
+codyssey/
+├── README.md          # 프로젝트 개요 및 실행 가이드
+└── docker/            # 실습 단계별 독립 폴더 (Docker Image 빌드 환경)
+    ├── Dockerfile     # 커스텀 이미지 명세
+    └── index.html     # Nginx 배포용 정적 콘텐츠
+
+## 
