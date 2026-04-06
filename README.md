@@ -469,7 +469,7 @@ To https://github.com/00skgun/codyssey.git
 
 codyssey/
 ├── README.md          # 프로젝트 개요 및 실행 가이드
-├── Screenshot\ 2026-04-02\ at\ 1.39.11 PM.png #
+├── custom_img_capture.png#
 └── docker/            # 실습 단계별 독립 폴더 (Docker Image 빌드 환경)
     ├── Dockerfile     # 커스텀 이미지 명세
     └── index.html     # Nginx 배포용 정적 콘텐츠
@@ -488,17 +488,17 @@ codyssey/
 
 ## 컨테이너 내부 포트로 직접 접속할 수 없는 이유와 매핑의 필요성
 
-Docker 컨테이너는 호스트 PC(내 컴퓨터)와 완전히 분리된 자기만의 가상 네트워크와 내부 IP를 씁니다. 그래서 외부 브라우저에서 컨테이너의 IP로 바로 치고 들어갈 수가 없습니다. 외부에서 브라우저를 통해 컨테이너 안쪽 웹 서버로 접근하려면, 호스트의 특정 포트로 들어온 요청을 컨테이너 쪽 포트로 토스해주는 포트 매핑(Port Forwarding)이 무조건 필요합니다.
+Docker 컨테이너는 호스트 PC와 완전히 분리된 자기만의 가상 네트워크와 내부 IP를 씁니다. 그래서 외부 브라우저에서 컨테이너의 IP로 바로 치고 들어갈 수가 없습니다. 외부에서 브라우저를 통해 컨테이너 안쪽 웹 서버로 접근하려면, 호스트의 특정 포트로 들어온 요청을 컨테이너 쪽 포트로 토스해주는 포트 매핑이 무조건 필요합니다.
 
 ## 절대 경로 / 상대 경로 선택 기준
 
 상대 경로: Dockerfile에서 COPY index.html . 할 때처럼 현재 작업 폴더가 기준일 때 씁니다. 프로젝트 폴더 전체를 다른 곳으로 옮겨도 경로가 꼬이지 않고 잘 돌아가게 만들 때 유리합니다.
 
-절대 경로: 호스트의 특정 폴더를 마운트하거나 시스템 설정 파일(/usr/share/nginx/html/)을 지정할 때처럼, 내 현재 위치가 어디든 상관없이 항상 고정된 타겟을 정확히 가리켜야 할 때 씁니다.
+절대 경로: 호스트의 특정 폴더를 마운트하거나 시스템 설정 파일을 지정할 때처럼, 내 현재 위치가 어디든 상관없이 항상 고정된 타겟을 정확히 가리켜야 할 때 씁니다.
 
 ## 파일 권한 숫자 표기(chmod) 규칙
 
-읽기(4), 쓰기(2), 실행(1) 권한 값을 더해서 소유자 / 그룹 / 기타 사용자 순서로 적어주는 방식입니다. 예를 들어 chmod 755라면 소유자는 모든 권한(4+2+1=7), 그룹과 기타 사용자는 읽기와 실행 권한(4+1=5)만 가지게 세팅하는 겁니다.
+읽기(4), 쓰기(2), 실행(1) 권한 값을 더해서 소유자 / 그룹 / 기타 사용자 순서로 적어주는 방식입니다. 예를 들어 chmod 755라면 소유자는 모든 권한, 그룹과 기타 사용자는 읽기와 실행 권한만 가지게 세팅하는 겁니다.
 
 ## 포트 매핑 실패 시 ("이미 사용 중") 진단 순서
 
@@ -511,4 +511,54 @@ Docker 컨테이너는 호스트 PC(내 컴퓨터)와 완전히 분리된 자기
 ## 컨테이너 삭제 후 데이터 증발 방지 대안
 
 컨테이너를 지우면 그 안에서 수정하거나 저장했던 데이터도 싹 다 지워집니다. 이걸 막으려면 처음 컨테이너를 띄울 때 Docker Volume(-v)을 연결해서, 실제 데이터는 컨테이너가 아니라 호스트 PC의 안전한 공간에 저장되도록 빼놔야 합니다. 이렇게 해야 컨테이너를 지우고 새로 띄워도 기존 데이터를 그대로 쓸 수 있습니다.
+
+## 트러블슈팅 2건 이상(문제 → 원인 가설 → 확인 → 해결/대안)
+
+문제 상황: curl http://localhost:8080으로 접속을 시도했으나 Couldn't connect to server 에러가 떴습니다. 그래서 다시 docker run으로 컨테이너를 띄우려 했더니 이번에는 Conflict. The container name "/my-custom-server" is already in use... 라는 이름 충돌 에러가 발생했습니다.
+
+원인 파악(가설): docker ps -a 명령어로 전체 상태를 확인해보니, 전에 실행했던 my-custom-server 컨테이너가 완전히 삭제되지 않고 종료 상태로 시스템에 남아있었기 때문이었습니다. Docker는 컨테이너가 정지되어 있어도 동일한 이름의 새 컨테이너 생성을 허용하지 않는다는 것을 확인했습니다.
+
+해결 조치: 중지된 컨테이너 내부에 접속하려던 시도(docker exec -it a3f8 bash) 역시 실행 중이 아니다라는 이유로 막히는 것을 확인한 후, docker rm a3f8 명령어를 통해 기존의 컨테이너를 완전히 삭제하여 이름 충돌 문제를 해결하고 포트를 확보했습니다.
+
+```bash
+c00skgun0932@c5r5s7 test % curl http://localhost:8080
+curl: (7) Failed to connect to localhost port 8080 after 0 ms: Couldn't connect to server
+c00skgun0932@c5r5s7 test % cd phase4 
+c00skgun0932@c5r5s7 phase4 % docker run -d -p 8080:80 --name my-custom-server codyssey-web:v1
+docker: Error response from daemon: Conflict. The container name "/my-custom-server" is already in use by container "a3f88de9d083980b8857edba0352b8149788098039ff8c51432563a82c219ff4". You have to remove (or rename) that container to be able to reuse that name.
+
+Run 'docker run --help' for more information
+c00skgun0932@c5r5s7 phase4 % docker ps -a
+CONTAINER ID   IMAGE             COMMAND                  CREATED      STATUS                  PORTS     NAMES
+a3f88de9d083   codyssey-web:v1   "/docker-entrypoint.…"   4 days ago   Exited (0) 4 days ago             my-custom-server
+dceb7e83e35b   ubuntu:22.04      "bash"                   4 days ago   Exited (0) 4 days ago             musing_lalande
+3f6a1df26083   hello-world       "/hello"                 5 days ago   Exited (0) 5 days ago             ecstatic_lichterman
+c00skgun0932@c5r5s7 phase4 % docker exec -it a3f
+docker: 'docker exec' requires at least 2 arguments
+
+Usage:  docker exec [OPTIONS] CONTAINER COMMAND [ARG...]
+
+See 'docker exec --help' for more information
+c00skgun0932@c5r5s7 phase4 % docker exec -it a3f8 bash
+Error response from daemon: container a3f88de9d083980b8857edba0352b8149788098039ff8c51432563a82c219ff4 is not running
+c00skgun0932@c5r5s7 phase4 % docker rm a3f8
+a3f8
+c00skgun0932@c5r5s7 phase4 % docker run -d -p 8080:80 --name my-custom-server codyssey-web:v1 
+925e686a701384b0b06ac30300cd19fdf201a276c0604d174cdbcea4257e3b88
+c00skgun0932@c5r5s7 phase4 % docker ps -a
+CONTAINER ID   IMAGE             COMMAND                  CREATED         STATUS                  PORTS                                     NAMES
+925e686a7013   codyssey-web:v1   "/docker-entrypoint.…"   8 seconds ago   Up 8 seconds            0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   my-custom-server
+dceb7e83e35b   ubuntu:22.04      "bash"                   4 days ago      Exited (0) 4 days ago                                             musing_lalande
+3f6a1df26083   hello-world       "/hello"                 5 days ago      Exited (0) 5 days ago                                             ecstatic_lichterman
+c00skgun0932@c5r5s7 phase4 % curl http://localhost:8080
+<h1>Codyssey AI/SW Workstation Custom Image Test!</h1>
+c00skgun0932@c5r5s7 phase4 % 
+
+```
+
+문제 상황: zsh: event not found: </h1> 에러 발생. HTML 태그를 echo로 입력할 때 느낌표나 특수문자가 쉘 이벤트로 오인받을 것이라 가설을 세웠습니다.
+
+원인 파악(가설): 작은따옴표(' ')와 큰따옴표(" ")의 차이 및 쉘 이스케이프 문자를 확인했습니다.
+
+해결 조치: 쉘이 내부 문자를 해석하지 않도록 큰따옴표 대신 작은따옴표를 사용하여 성공적으로 index.html을 생성했습니다.
 
